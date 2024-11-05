@@ -85,12 +85,12 @@ public class ProcessingNode extends ModelApplication {
         if(System.getenv("app.producer.enable.idempotence") == null)env.put("app.producer.enable.idempotence", "true");
         if(System.getenv("app.producer.linger.ms") == null) env.put("app.producer.linger.ms", "1");
         if(System.getenv("app.producer.acks") == null) env.put("app.producer.acks", "all");
-//        try {
-//            setEnv(env);
-//        }
-//        catch (Exception e) {
-//            e.printStackTrace();
-//        }
+       try {
+           setEnv(env);
+       }
+       catch (Exception e) {
+           e.printStackTrace();
+       }
         Scanner keyboard = new Scanner(System.in);
         ProcessingNode pn = new ProcessingNode();
         pn.runPN(keyboard);
