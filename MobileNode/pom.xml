@@ -4,8 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
-    <artifactId>Exercicio2</artifactId>
+    <parent>
+        <groupId>com.trab1</groupId>
+        <artifactId>root</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    
+    <groupId>com.trab1</groupId>
+    <artifactId>mobile-node</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
