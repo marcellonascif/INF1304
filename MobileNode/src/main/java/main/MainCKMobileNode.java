@@ -2,9 +2,11 @@ package main;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
+import java.util.UUID;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -16,18 +18,38 @@ import main.java.ckafka.mobile.CKMobileNode;
 import main.java.ckafka.mobile.tasks.SendLocationTask;
 
 /**
- * @author Biscaia
+ * @authors João Biscaia, Thomas de Mello, Marcello Nascif 
  *
  */
 public class MainCKMobileNode extends CKMobileNode {
+    private Date date;
+    private double latitude;
+	private double longitude;
+	private UUID uuid;
     /** used to move this MN */
     private int stepNumber = 0;
 
     /**
      * Constructor
      */
-    public MainCKMobileNode() {
+
+    public MainCKMobileNode(){
     }
+     
+    public MainCKMobileNode(Date date, double latitude, double longitude, UUID uuid) {
+		super();
+		this.date = date;
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.uuid = uuid;
+	}
+
+    public Date getDate(){
+        return this.date;
+    }
+
+
+    // BACALHAU código do meslin abaixo:
 
     /**
      * main<br>

@@ -92,12 +92,12 @@ public class MainGD implements GroupSelection {
         double longitude = Double.parseDouble(String.valueOf(contextInfo.get("longitude")));
 
         // Atualiza a posição do inspetor (nó móvel)
-        // try {
-		// 	inspector = new MainCKMobileNode(String.valueOf(contextInfo.get("date")), latitude, longitude,
-		// 			String.valueOf(contextInfo.get("ID")));
-		// } catch (NumberFormatException | ParseException e) {
-		// 	e.printStackTrace();
-		// }
+        try {
+			inspector = new MainCKMobileNode(String.valueOf(contextInfo.get("date")), latitude, longitude,
+					String.valueOf(contextInfo.get("ID")));
+		} catch (NumberFormatException | ParseException e) {
+			e.printStackTrace();
+		}
         inspectorList.add(inspector);
         
         setOfGroups.add(1000);	// Grupo padrão para nós móveis
