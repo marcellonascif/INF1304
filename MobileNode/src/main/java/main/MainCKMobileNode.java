@@ -18,14 +18,14 @@ import main.java.ckafka.mobile.CKMobileNode;
 import main.java.ckafka.mobile.tasks.SendLocationTask;
 
 /**
- * @authors João Biscaia, Thomas de Mello, Marcello Nascif 
+ * @authors João Biscaia, Thomas de Mello, Marcello Nascif
  *
  */
 public class MainCKMobileNode extends CKMobileNode {
-    private Date date;
     private double latitude;
 	private double longitude;
 	private UUID uuid;
+
     /** used to move this MN */
     private int stepNumber = 0;
 
@@ -35,17 +35,32 @@ public class MainCKMobileNode extends CKMobileNode {
 
     public MainCKMobileNode(){
     }
-     
-    public MainCKMobileNode(Date date, double latitude, double longitude, UUID uuid) {
+
+    public MainCKMobileNode(UUID uuid, double latitude, double longitude) {
 		super();
-		this.date = date;
+		this.uuid = uuid;
 		this.latitude = latitude;
 		this.longitude = longitude;
-		this.uuid = uuid;
 	}
 
-    public Date getDate(){
-        return this.date;
+    /**
+     * Sends a message to processing nodes<br>
+     *
+     * @param keyboard
+     */
+
+    private void sendMessageToPN(Scanner keyboard) {
+        System.out.print("Entre com a mensagem para o PN: ");
+        String messageText = keyboard.nextLine();
+
+        ApplicationMessage message = createDefaultApplicationMessage();
+        SwapData data = new SwapData();
+
+        data.setMessage(messageText.getBytes(StandardCharsets.UTF_8));
+        data.setTopic("AppModel");
+        message.setContentObject(data);
+
+        sendMessageToGateway(message);
     }
 
 
@@ -79,17 +94,12 @@ public class MainCKMobileNode extends CKMobileNode {
         Scanner keyboard = new Scanner(System.in);
         boolean fim = false;
         while(!fim) {
-            System.out.print("Mensagem para (G)rupo ou (I)ndivíduo (P)rocessing Node (Z para terminar)? ");
+            System.out.print("Mensagem para (P)rocessing Node (Z para terminar)? ");
             String linha = keyboard.nextLine();
             linha = linha.toUpperCase();
+
             System.out.println(String.format("Sua opção foi %s.", linha));
             switch (linha) {
-                case "G":
-                    sendGroupcastMessage(keyboard);
-                    break;
-                case "I":
-                    sendUnicastMessage(keyboard);
-                    break;
                 case "P":
                     sendMessageToPN(keyboard);
                     break;
@@ -101,28 +111,15 @@ public class MainCKMobileNode extends CKMobileNode {
                     System.out.println("Opção inválida");
                     break;
             }
-            if(linha.equals("Z")) break;
+
+            if (linha.equals("Z")) {
+                break;
+            }
         }
+
         keyboard.close();
         System.out.println("FIM!");
         System.exit(0);
-    }
-
-    /**
-     * Sends a message to processing nodes<br>
-     *
-     * @param keyboard
-     */
-    private void sendMessageToPN(Scanner keyboard) {
-        System.out.print("Entre com a mensagem para o PN: ");
-        String messageText = keyboard.nextLine();
-
-        ApplicationMessage message = createDefaultApplicationMessage();
-        SwapData data = new SwapData();
-        data.setMessage(messageText.getBytes(StandardCharsets.UTF_8));
-        data.setTopic("AppModel");
-        message.setContentObject(data);
-        sendMessageToGateway(message);
     }
 
     /**
