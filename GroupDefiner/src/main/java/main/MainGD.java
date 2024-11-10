@@ -43,6 +43,7 @@ public class MainGD implements GroupSelection{
     final Logger logger = LoggerFactory.getLogger(GroupDefiner.class);
     private Swap swap;
     private Set<PontoDeOnibus> pontosDeOnibus = new HashSet<PontoDeOnibus>();
+    private final double RAIO_DO_PONTO = 4000.0; // 1 km
 
     public MainGD() {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -88,7 +89,9 @@ public class MainGD implements GroupSelection{
      */
     public Set<Integer> groupsIdentification() {
         Set<Integer> setOfGroups = new HashSet<Integer>();
-        
+        for (PontoDeOnibus ponto : pontosDeOnibus) {
+            setOfGroups.add(ponto.getNumeroGrupo());
+        }
        
         return setOfGroups;
     }
@@ -102,13 +105,22 @@ public class MainGD implements GroupSelection{
         Set<Integer> setOfGroups = new HashSet<Integer>();
 
 
+        String ID = String.valueOf(contextInfo.get("ID"));
         double latitude = Double.parseDouble(String.valueOf(contextInfo.get("latitude")));
         double longitude = Double.parseDouble(String.valueOf(contextInfo.get("longitude")));
-        System.out.println(String.format("[MainGD] latitude = %f, longitude = %f", latitude, longitude));
+        System.out.println(String.format("[MainGD] ID: %s, latitude = %f, longitude = %f", ID, latitude, longitude));
+
+        Coordinate coordenadas = new Coordinate(latitude, longitude);
+        
+        for (PontoDeOnibus ponto : this.pontosDeOnibus) {
+            if(ponto.estaDentroDoRaio(coordenadas, this.RAIO_DO_PONTO)){
+                setOfGroups.add(ponto.getNumeroGrupo());
+                System.out.println(String.format("[MainGD] A coordenada está dentro do raio do ponto %s. Adicionando o Mobile Node %s ao grupo de numero %d.", ponto.getNomePonto(), ID, ponto.getNumeroGrupo()));
+            }
+        }
         
         setOfGroups.add(1000);	// Mobile Node default group
-        Coordinate coordinate = new Coordinate(latitude, longitude);
-        logger.info(String.format("[MainGD] lista de grupos para %s = %s.", String.valueOf(contextInfo.get("ID")), setOfGroups));
+        logger.info(String.format("[MainGD] lista de grupos para %s = %s.", ID, setOfGroups));
         return setOfGroups;
     }
 
