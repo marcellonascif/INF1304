@@ -85,7 +85,7 @@ public class ProcessingNode extends ModelApplication {
         optionsMap.put(OPTION_EXIT, scanner -> fim = true);
 
         while(!fim) {
-            System.out.print("Mensagem para (G)rupo ou (I)ndivíduo (P)rocessing Node (Z para terminar)? ");
+            System.out.print("Mensagem para (G)rupo ou (I)ndivíduo (P)rocessing Node (Z para terminar)? \n\n");
             String linha = keyboard.nextLine().trim().toUpperCase();
             System.out.printf("Sua opção foi %s.\n", linha);
             if(optionsMap.containsKey(linha)) optionsMap.get(linha).accept(keyboard);

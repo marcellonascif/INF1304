@@ -117,6 +117,10 @@ public class MainGD implements GroupSelection{
                 setOfGroups.add(ponto.getNumeroGrupo());
                 System.out.println(String.format("[MainGD] A coordenada está dentro do raio do ponto %s. Adicionando o Mobile Node %s ao grupo de numero %d.", ponto.getNomePonto(), ID, ponto.getNumeroGrupo()));
             }
+            else if(setOfGroups.contains(ponto.getNumeroGrupo())){
+                setOfGroups.remove(ponto.getNumeroGrupo());
+                System.out.println(String.format("[MainGD] A coordenada não está mais dentro do raio do ponto %s. Removendo o Mobile Node %s do grupo de numero %d.", ponto.getNomePonto(), ID, ponto.getNumeroGrupo()));
+            }
         }
         
         setOfGroups.add(1000);	// Mobile Node default group

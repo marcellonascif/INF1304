@@ -50,7 +50,7 @@ public class PontoDeOnibus {
     public boolean estaDentroDoRaio(Coordinate coord_mn, double raio) {
 
         double distancia = calcularDistancia(coord_mn, this.coordenada);
-        System.out.println("Distância até o ponto de ônibus " + this.nomePonto + ": " + distancia + " metros");
+        System.out.printf("Distância até o ponto de ônibus %s(%d): %.2f metros\n", this.nomePonto, this.numeroGrupo, distancia);
         if (distancia <= raio) {
             return true;
         }
