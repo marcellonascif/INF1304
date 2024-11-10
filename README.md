@@ -1,4 +1,10 @@
 # INF1304 - Trabalho 1
+Autores: Thomas de Mello, Marcello Nascif e João Biscaia
+## Pré-requisitos
+- [Docker](https://docs.docker.com/get-docker/) e [Docker Compose](https://docs.docker.com/compose/install/)
+- [Git](https://git-scm.com/downloads)
+- [Java JDK 8+](https://www.oracle.com/java/technologies/javase-downloads.html)
+- [Maven](https://maven.apache.org/install.html)
 
 ## Como rodar
 
@@ -23,19 +29,35 @@ Para verificar se as imagens estão rodando:
 sudo docker ps -a
 ```
 
-### Compilar e rodar o ProcessingNode
+### Para compilar os projetos maven, execute o script 'compile_all.sh'
+
+Conceder permissão de execução ao shell 
+```bash
+chmod +x compile_all.sh 
+```
+Rodar o script
+```bash
+./compile_all.sh
+```
+
+
+### Rodar o ProcessingNode
 
 ```bash
 cd ProcessingNode
-mvn clean install
 mvn exec:java -Dexec.mainClass="main.ProcessingNode"
 ```
 
-### Compilar e rodar o MobileNode
+### Rodar o MobileNode
 
 ```bash
 cd MobileNode
-mvn clean install
 mvn exec:java -Dexec.mainClass="main.MainCKMobileNode"
 ```
 
+### Rodar o GroupDefiner
+
+```bash
+cd GroupDefiner
+mvn exec:java -Dexec.mainClass="main.MainGD"
+``` 
