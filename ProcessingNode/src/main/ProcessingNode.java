@@ -106,7 +106,6 @@ public class ProcessingNode extends ModelApplication {
             SwapData data = swap.SwapDataDeserialization((byte[]) record.value());
             String text = new String(data.getMessage(), StandardCharsets.UTF_8);
             System.out.println("Mensagem recebida = " + text);
-            sendMessageToGD(text);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -150,19 +149,4 @@ public class ProcessingNode extends ModelApplication {
         }
     }
 
-    /**
-     * Send message to GroupDefiner
-     * @param messageText
-     */
-    private void sendMessageToGD(String messageText) {
-        System.out.println("Enviando mensagem para o GroupDefiner: " + messageText);
-    
-        try {
-			sendRecord(createRecord("GroupReportTopic", "GroupDefiner", swap.SwapDataSerialization(createSwapData(messageText))));
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-            logger.error("Error SendPrivateMessage", e);
-        }
-    }
 }

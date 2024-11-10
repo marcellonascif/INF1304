@@ -9,39 +9,56 @@ import java.util.Properties;
 import java.util.Collections;
 import java.util.Base64;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+
+import java.nio.charset.StandardCharsets;
+
+import java.time.Duration;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ckafka.data.Swap;
+import ckafka.data.SwapData;
+
 import main.StaticLibrary;
 import main.java.ckafka.GroupDefiner;
 import main.java.ckafka.GroupSelection;
-import ckafka.data.SwapData;
 
-
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 
 public class MainGD implements GroupSelection{
 
     final Logger logger = LoggerFactory.getLogger(GroupDefiner.class);
     private Swap swap;
+    private Set<PontoDeOnibus> pontosDeOnibus = new HashSet<PontoDeOnibus>();
 
     public MainGD() {
         ObjectMapper objectMapper = new ObjectMapper();
         this.swap = new Swap(objectMapper);
         new GroupDefiner(this, swap);
         System.out.println("GroupDefiner iniciado.");
-        receiveMessagesFromProcessingNode();
+        
+        // Carrega os pontos de ônibus do arquivo CSV
+        pontosDeOnibus = carregarPontosDeOnibus();
+
+        System.out.println("Pontos de ônibus carregados:");
+
+        // Itera sobre os pontos de ônibus carregados e imprime cada um
+        for (PontoDeOnibus ponto : pontosDeOnibus) {
+            System.out.println(ponto.toString());
+        }
     }
     public static void main(String[] args) {
     	// creating missing environment variable
@@ -63,7 +80,6 @@ public class MainGD implements GroupSelection{
 			e.printStackTrace();
 		}
         
-
     }
 
     /**
@@ -72,7 +88,8 @@ public class MainGD implements GroupSelection{
      */
     public Set<Integer> groupsIdentification() {
         Set<Integer> setOfGroups = new HashSet<Integer>();
-        setOfGroups.add(1000);	// Mobile Node default group
+        
+       
         return setOfGroups;
     }
 
@@ -81,10 +98,14 @@ public class MainGD implements GroupSelection{
      * @return a set of groups representing the node groups
      */
     public Set<Integer> getNodesGroupByContext(ObjectNode contextInfo) {
+        System.out.println("[MainGD] getNodesGroupByContext chamado");
         Set<Integer> setOfGroups = new HashSet<Integer>();
+
+
         double latitude = Double.parseDouble(String.valueOf(contextInfo.get("latitude")));
         double longitude = Double.parseDouble(String.valueOf(contextInfo.get("longitude")));
-
+        System.out.println(String.format("[MainGD] latitude = %f, longitude = %f", latitude, longitude));
+        
         setOfGroups.add(1000);	// Mobile Node default group
         Coordinate coordinate = new Coordinate(latitude, longitude);
         logger.info(String.format("[MainGD] lista de grupos para %s = %s.", String.valueOf(contextInfo.get("ID")), setOfGroups));
@@ -99,49 +120,38 @@ public class MainGD implements GroupSelection{
         return "gd.one.producer";
     }
 
-    /**
-     * Método para configurar o consumidor Kafka e escutar o tópico "GroupReportTopic"
-     */
-    public void receiveMessagesFromProcessingNode() {
-        System.out.println("Recebendo mensagens do ProcessingNode...");
-        Properties properties = new Properties();
-        properties.put("bootstrap.servers", "127.0.0.1:9092"); // Servidor Kafka
-        properties.put("group.id", "gw-gd"); // Grupo de consumidores para o GroupDefiner
-        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        properties.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
+    // Método para carregar pontos de ônibus do arquivo CSV
+    public Set<PontoDeOnibus> carregarPontosDeOnibus() {
+        Set<PontoDeOnibus> pontosDeOnibus = new HashSet<>();
 
-        KafkaConsumer<String, byte[]> consumer = new KafkaConsumer<>(properties);
-        consumer.subscribe(Collections.singletonList("GroupReportTopic"));
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("csv/pontosDeOnibusCoordenadas.csv");
+             CSVReader reader = new CSVReader(new InputStreamReader(is))) {
+            
+            String[] line;
+            reader.readNext(); // Pular o cabeçalho
+            
+            while ((line = reader.readNext()) != null) {
+                try {
+                    // Parse dos valores de cada coluna
+                    int numeroGrupo = Integer.parseInt(line[0]);
+                    String nomePonto = line[1];
+                    double latitude = Double.parseDouble(line[2]);
+                    double longitude = Double.parseDouble(line[3]);
 
-        // Loop para consumir mensagens do tópico
-        new Thread(() -> {
-            try {
-                while (true) {
-                    ConsumerRecords<String, byte[]> records = consumer.poll(Duration.ofMillis(100));
-                    for (ConsumerRecord<String, byte[]> record : records) {
-                        processMessage(record); // Chama a função para processar cada mensagem
-                    }
+                    // Criação do objeto PontoDeOnibus e adição ao HashSet
+                    PontoDeOnibus ponto = new PontoDeOnibus(numeroGrupo, nomePonto, latitude, longitude);
+                    pontosDeOnibus.add(ponto);
+                    
+                } catch (NumberFormatException e) {
+                    System.err.println("Erro ao converter um valor numérico na linha: " + String.join(",", line));
+                    e.printStackTrace();
                 }
-            } finally {
-                consumer.close(); 
             }
-        }).start();
-    }
-
-    /**
-     * Método para processar a mensagem recebida do ProcessingNode
-     * @param record O registro da mensagem recebida
-     */
-    private void processMessage(ConsumerRecord<String, byte[]> record) {
-        System.out.println(String.format("Mensagem recebida de %s", record.key()));
-        try {
-            // String message = new String(record.value(), StandardCharsets.UTF_8);
-            // System.out.println("Mensagem recebida = " + message);
-            SwapData data = swap.SwapDataDeserialization((byte[]) record.value());
-            String text = new String(data.getMessage(), StandardCharsets.UTF_8);
-            System.out.println("Conteúdo da mensagem = " + text);
-        } catch (Exception e) {
+        } catch (IOException | CsvValidationException e) {
             e.printStackTrace();
         }
+
+        return pontosDeOnibus;
     }
+    
 }
