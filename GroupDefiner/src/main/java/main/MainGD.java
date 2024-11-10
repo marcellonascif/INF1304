@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Properties;
+import java.util.Collections;
+import java.util.Base64;
 
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
@@ -18,15 +21,27 @@ import ckafka.data.Swap;
 import main.StaticLibrary;
 import main.java.ckafka.GroupDefiner;
 import main.java.ckafka.GroupSelection;
+import ckafka.data.SwapData;
 
-public class mainGD implements GroupSelection{
+
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+
+public class MainGD implements GroupSelection{
 
     final Logger logger = LoggerFactory.getLogger(GroupDefiner.class);
+    private Swap swap;
 
-    public mainGD() {
+    public MainGD() {
         ObjectMapper objectMapper = new ObjectMapper();
-        Swap swap = new Swap(objectMapper);
+        this.swap = new Swap(objectMapper);
         new GroupDefiner(this, swap);
+        System.out.println("GroupDefiner iniciado.");
+        receiveMessagesFromProcessingNode();
     }
     public static void main(String[] args) {
     	// creating missing environment variable
@@ -42,10 +57,12 @@ public class mainGD implements GroupSelection{
 		if(System.getenv("gd.one.producer.linger.ms") == null) 			env.put("gd.one.producer.linger.ms", "1");
 		try {
 			StaticLibrary.setEnv(env);
+            System.out.println("Iniciando GroupDefiner...");
+            new MainGD();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-        new mainGD();
+        
 
     }
 
@@ -80,5 +97,51 @@ public class mainGD implements GroupSelection{
 
     public String kafkaProducerPrefix() {
         return "gd.one.producer";
+    }
+
+    /**
+     * Método para configurar o consumidor Kafka e escutar o tópico "GroupReportTopic"
+     */
+    public void receiveMessagesFromProcessingNode() {
+        System.out.println("Recebendo mensagens do ProcessingNode...");
+        Properties properties = new Properties();
+        properties.put("bootstrap.servers", "127.0.0.1:9092"); // Servidor Kafka
+        properties.put("group.id", "gw-gd"); // Grupo de consumidores para o GroupDefiner
+        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        properties.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
+
+        KafkaConsumer<String, byte[]> consumer = new KafkaConsumer<>(properties);
+        consumer.subscribe(Collections.singletonList("GroupReportTopic"));
+
+        // Loop para consumir mensagens do tópico
+        new Thread(() -> {
+            try {
+                while (true) {
+                    ConsumerRecords<String, byte[]> records = consumer.poll(Duration.ofMillis(100));
+                    for (ConsumerRecord<String, byte[]> record : records) {
+                        processMessage(record); // Chama a função para processar cada mensagem
+                    }
+                }
+            } finally {
+                consumer.close(); 
+            }
+        }).start();
+    }
+
+    /**
+     * Método para processar a mensagem recebida do ProcessingNode
+     * @param record O registro da mensagem recebida
+     */
+    private void processMessage(ConsumerRecord<String, byte[]> record) {
+        System.out.println(String.format("Mensagem recebida de %s", record.key()));
+        try {
+            // String message = new String(record.value(), StandardCharsets.UTF_8);
+            // System.out.println("Mensagem recebida = " + message);
+            SwapData data = swap.SwapDataDeserialization((byte[]) record.value());
+            String text = new String(data.getMessage(), StandardCharsets.UTF_8);
+            System.out.println("Conteúdo da mensagem = " + text);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
