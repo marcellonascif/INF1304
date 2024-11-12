@@ -42,7 +42,7 @@ public class PontoDeOnibus {
 
     /**
      * Método que verifica se a coordenada dada está dentro de um raio de qualquer ponto de ônibus no HashSet
-     * 
+     *
      * @param coord_mn Coordenada do Mobile Node
      * @param raio Em metros, distância máxima para incluir a coordenada
      * @return boolean, Se a coordenada está dentro do raio
@@ -60,12 +60,12 @@ public class PontoDeOnibus {
 
     /**
      * Método que calcula a distância entre duas coordenadas usando a fórmula de Haversine
-     * 
+     *
      * @param coord1 Primeira coordenada
      * @param coord2 Segunda coordenada
      * @return Distância entre as duas coordenadas em metros
      */
-    private double calcularDistancia(Coordinate coord1, Coordinate coord2) {
+    static public double calcularDistancia(Coordinate coord1, Coordinate coord2) {
         double latitude1 = Math.toRadians(coord1.getLat());
         double longitude1 = Math.toRadians(coord1.getLon());
         double latitude2 = Math.toRadians(coord2.getLat());
@@ -82,6 +82,16 @@ public class PontoDeOnibus {
 
         // Distância final em metros
         return RAIO_DA_TERRA_METROS * c;
+    }
+
+    static public double calcularTempo(Double distancia, Double velocidade) {
+        double tempo = (distancia / (velocidade / 3.6)) / 60;
+
+        if (tempo < 1) {
+            return 1;
+        }
+
+        return tempo;
     }
 
 }
