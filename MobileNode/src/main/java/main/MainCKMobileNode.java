@@ -2,11 +2,13 @@ package main;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -23,183 +25,104 @@ import main.java.ckafka.mobile.tasks.SendLocationTask;
  */
 public class MainCKMobileNode extends CKMobileNode {
     private double latitude;
-	private double longitude;
-	private UUID uuid;
-
-    /** used to move this MN */
+    private double longitude;
+    private UUID uuid;
     private int stepNumber = 0;
 
-    /**
-     * Constructor
-     */
+    // Executor service para agendar tarefas de envio de localização
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private ScheduledFuture<?> locationTask;
 
-    public MainCKMobileNode(){
-    }
+    public MainCKMobileNode() {}
 
     public MainCKMobileNode(UUID uuid, double latitude, double longitude) {
-		super();
-		this.uuid = uuid;
-		this.latitude = latitude;
-		this.longitude = longitude;
-	}
-
-    /**
-     * Sends a message to processing nodes<br>
-     *
-     * @param keyboard
-     */
-
-    private void sendMessageToPN(Scanner keyboard) {
-        System.out.print("Entre com a mensagem para o PN: ");
-        String messageText = keyboard.nextLine();
-
-        ApplicationMessage message = createDefaultApplicationMessage();
-        SwapData data = new SwapData();
-
-        data.setMessage(messageText.getBytes(StandardCharsets.UTF_8));
-        data.setTopic("AppModel");
-        message.setContentObject(data);
-
-        sendMessageToGateway(message);
+        super();
+        this.uuid = uuid;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
+    private void sendLocation() {
+        ApplicationMessage message = createDefaultApplicationMessage();
+        SwapData locationData = newLocation(stepNumber);
 
-    // BACALHAU código do meslin abaixo:
+        if (locationData != null) {
+            message.setContentObject(locationData);
+            sendMessageToGateway(message);
+            System.out.println("Localização enviada ao Processing Node.");
+        }
+    }
 
-    /**
-     * main<br>
-     * @param args
-     */
+    private void startLocationTask() {
+        locationTask = scheduler.scheduleAtFixedRate(() -> {
+            try {
+                sendLocation();
+            } catch (Exception e) {
+                logger.error("Erro ao enviar localização periodicamente.", e);
+            }
+        }, 0, 10, TimeUnit.SECONDS);
+    }
+
     public static void main(String[] args) {
-        MainCKMobileNode vaiFazer = new MainCKMobileNode();
-        vaiFazer.fazTudo();
+        MainCKMobileNode node = new MainCKMobileNode();
+        node.startLocationTask();  // Inicia a tarefa de localização periódica
 
-        // Calls close() to properly close MN method after shut down
-        Runtime.getRuntime().addShutdownHook(new Thread( () -> {
-            close();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (node.locationTask != null && !node.locationTask.isCancelled()) {
+                node.locationTask.cancel(true);
+            }
+            node.scheduler.shutdown();
+            System.out.println("Encerrando a aplicação.");
         }));
     }
 
-    /**
-     * fazTudo<br>
-     * Read user option from keyboard (unicast or groupcast message)<br>
-     * Read destination receipt from keyboard (UUID or Group)<br>
-     * Read message from keyboard<br>
-     * Send message<br>
-     */
-    private void fazTudo() {
-        /*
-         * User interface (!)
-         */
-        Scanner keyboard = new Scanner(System.in);
-        boolean fim = false;
-        while(!fim) {
-            System.out.print("Mensagem para (P)rocessing Node (Z para terminar)? ");
-            String linha = keyboard.nextLine();
-            linha = linha.toUpperCase();
+    @Override
+    public SwapData newLocation(Integer messageCounter) {
+        logger.debug("Gerando nova localização");
 
-            System.out.println(String.format("Sua opção foi %s.", linha));
-            switch (linha) {
-                case "P":
-                    sendMessageToPN(keyboard);
-                    break;
-                case "Z":
-                    fim = true;
-                    break;
+        ObjectNode location = objectMapper.createObjectNode();
+        double stepX = (-43.23232376069340 - (-43.18559736525978)) / 10;
+        double stepY = (-22.978883470478085 - (-22.936826006961283)) / 10;
+        Double amountX = -43.18559736525978 + stepX * this.stepNumber;
+        Double amountY = -22.936826006961283 + stepY * this.stepNumber;
+        this.stepNumber = (this.stepNumber + 1) % 10;
 
-                default:
-                    System.out.println("Opção inválida");
-                    break;
-            }
+        location.put("ID", this.mnID.toString());
+        location.put("messageCount", messageCounter);
+        location.put("longitude", amountX);
+        location.put("latitude", amountY);
+        location.put("date", new Date().toString());
 
-            if (linha.equals("Z")) {
-                break;
-            }
+        try {
+            SwapData locationData = new SwapData();
+            locationData.setContext(location);
+            locationData.setDuration(60);  // Tempo de vida da mensagem em segundos
+            return locationData;
+        } catch (Exception e) {
+            logger.error("Não foi possível criar o SwapData de localização", e);
+            return null;
         }
-
-        keyboard.close();
-        System.out.println("FIM!");
-        System.exit(0);
     }
 
-    /**
-     * Sends a unicast message
-     * @param keyboard
-     */
-    private void sendUnicastMessage(Scanner keyboard) {
-        System.out.println("Mensagem unicast. Entre com o UUID do indivíduo:\n"
-                + "HHHHHHHH-HHHH-HHHH-HHHH-HHHHHHHHHHHH");
-        String uuid = keyboard.nextLine();
-        System.out.print("Entre com a mensagem: ");
-        String messageText = keyboard.nextLine();
-        System.out.println(String.format("Enviando mensagem |%s| para o indivíduo %s.", messageText, uuid));
-
-        // Create and send the message
-        SwapData privateData = new SwapData();
-        privateData.setMessage(messageText.getBytes(StandardCharsets.UTF_8));
-        privateData.setTopic("PrivateMessageTopic");
-        privateData.setRecipient(uuid);
-        ApplicationMessage message = createDefaultApplicationMessage();
-        message.setContentObject(privateData);
-        sendMessageToGateway(message);
-    }
-
-    /**
-     * sendGroupcastMessage<br>
-     * Sends a groupcast message<br>
-     * @param keyboard
-     */
-    private void sendGroupcastMessage(Scanner keyboard) {
-        // get message content
-        String group;
-        System.out.print("Mensagem groupcast. Entre com o número do grupo: ");
-        group = keyboard.nextLine();
-        System.out.print("Entre com a mensagem: ");
-        String messageText = keyboard.nextLine();
-        System.out.println(String.format("Enviando mensagem |%s| para o grupo %s.", messageText, group));
-        // create and send the message
-        SwapData groupData = new SwapData();
-        groupData.setMessage(messageText.getBytes(StandardCharsets.UTF_8));
-        groupData.setTopic("GroupMessageTopic");
-        groupData.setRecipient(group);
-        ApplicationMessage message = createDefaultApplicationMessage();
-        message.setContentObject(groupData);
-        sendMessageToGateway(message);
-    }
-
-    /**
-     * Method called when the mobile node connects with the Gateway
-     *
-     * @post send location task is scheduled
-     */
     @Override
     public void connected(NodeConnection nodeConnection) {
-        try{
-            logger.debug("Connected");
-            final SendLocationTask sendlocationtask = new SendLocationTask(this);
-            this.scheduledFutureLocationTask = this.threadPool.scheduleWithFixedDelay(sendlocationtask, 5000, 60000, TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            logger.error("Error scheduling SendLocationTask", e);
-        }
+        logger.debug("Conectado ao Gateway");
     }
 
-    /**
-     *
-     */
     @Override
     public void newMessageReceived(NodeConnection nodeConnection, Message message) {
-        logger.debug("New Message Received");
+        logger.debug("Nova mensagem recebida");
         try {
             SwapData swp = fromMessageToSwapData(message);
-            if(swp.getTopic().equals("Ping")) {
+            if (swp.getTopic().equals("Ping")) {
                 message.setSenderID(this.mnID);
                 sendMessageToGateway(message);
             } else {
                 String str = new String(swp.getMessage(), StandardCharsets.UTF_8);
-                logger.info(String.format("Message received from %s: %s", message.getRecipientID(), str));
+                logger.info(String.format("Mensagem recebida de %s: %s", message.getRecipientID(), str));
             }
         } catch (Exception e) {
-            logger.error("Error reading new message received");
+            logger.error("Erro ao ler a nova mensagem recebida");
         }
     }
 
@@ -211,45 +134,4 @@ public class MainCKMobileNode extends CKMobileNode {
 
     @Override
     public void internalException(NodeConnection nodeConnection, Exception e) {}
-
-    /**
-     * Get the Location (in simulation it generates a new location)
-     *
-     * @pre MessageCounter
-     * @post ShippableData containing location as Context information
-     *
-     */
-    @Override
-    public SwapData newLocation(Integer messageCounter) {
-        logger.debug("Getting new location");
-
-        // creates an empty json {}
-        ObjectNode location = objectMapper.createObjectNode();
-
-        // 3 parameters that composes
-        // Origem: -43.18559736525978 -22.936826006961283
-        // Destino -43.23232376069340 -22.978883470478085
-        double stepX = (-43.23232376069340 - (-43.18559736525978)) / 10;
-        double stepY = (-22.978883470478085 - (-22.936826006961283)) / 10;
-        Double amountX = -43.18559736525978 + stepX * this.stepNumber;
-        Double amountY = -22.936826006961283 + stepY * this.stepNumber;
-        this.stepNumber = (this.stepNumber+1) % 10;
-
-        // we write the data to the json document
-        location.put("ID", this.mnID.toString());
-        location.put("messageCount", messageCounter);
-        location.put("longitude", amountX);
-        location.put("latitude", amountY);
-        location.put("date", new Date().toString());
-
-        try {
-            SwapData locationData = new SwapData();
-            locationData.setContext(location);
-            locationData.setDuration(60);			// tempo em segundos de vida da mensagem
-            return locationData;
-        } catch (Exception e) {
-            logger.error("Location Swap Data could not be created", e);
-            return null;
-        }
-    }
 }
