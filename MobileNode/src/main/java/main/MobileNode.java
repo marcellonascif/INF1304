@@ -21,27 +21,27 @@ import main.java.ckafka.mobile.tasks.SendLocationTask;
  * @authors João Biscaia, Thomas de Mello, Marcello Nascif
  *
  */
-public class MainCKMobileNode extends CKMobileNode {
-    private double latitude;
-	private double longitude;
-	private UUID uuid;
-
-    /** used to move this MN */
-    private int stepNumber = 0;
-
+public class MobileNode extends CKMobileNode {
+    protected String nomeNode;
+    protected double latitude;
+	protected double longitude;
+    
     /**
      * Constructor
      */
 
-    public MainCKMobileNode(){
+    public MobileNode(){
     }
 
-    public MainCKMobileNode(UUID uuid, double latitude, double longitude) {
+    public MobileNode(String nomeNode, double latitude, double longitude) {
 		super();
-		this.uuid = uuid;
 		this.latitude = latitude;
 		this.longitude = longitude;
 	}
+
+    public UUID getUuid() {
+        return this.mnID;
+    }
 
     /**
      * Sends a message to processing nodes<br>
@@ -63,23 +63,6 @@ public class MainCKMobileNode extends CKMobileNode {
         sendMessageToGateway(message);
     }
 
-
-    // BACALHAU código do meslin abaixo:
-
-    /**
-     * main<br>
-     * @param args
-     */
-    public static void main(String[] args) {
-        MainCKMobileNode vaiFazer = new MainCKMobileNode();
-        vaiFazer.fazTudo();
-
-        // Calls close() to properly close MN method after shut down
-        Runtime.getRuntime().addShutdownHook(new Thread( () -> {
-            close();
-        }));
-    }
-
     /**
      * fazTudo<br>
      * Read user option from keyboard (unicast or groupcast message)<br>
@@ -87,7 +70,7 @@ public class MainCKMobileNode extends CKMobileNode {
      * Read message from keyboard<br>
      * Send message<br>
      */
-    private void fazTudo() {
+    public void fazTudo() {
         /*
          * User interface (!)
          */
@@ -212,44 +195,4 @@ public class MainCKMobileNode extends CKMobileNode {
     @Override
     public void internalException(NodeConnection nodeConnection, Exception e) {}
 
-    /**
-     * Get the Location (in simulation it generates a new location)
-     *
-     * @pre MessageCounter
-     * @post ShippableData containing location as Context information
-     *
-     */
-    @Override
-    public SwapData newLocation(Integer messageCounter) {
-        logger.debug("Getting new location");
-
-        // creates an empty json {}
-        ObjectNode location = objectMapper.createObjectNode();
-
-        // 3 parameters that composes
-        // Origem: -43.18559736525978 -22.936826006961283
-        // Destino -43.23232376069340 -22.978883470478085
-        double stepX = (-43.23232376069340 - (-43.18559736525978)) / 10;
-        double stepY = (-22.978883470478085 - (-22.936826006961283)) / 10;
-        Double amountX = -43.18559736525978 + stepX * this.stepNumber;
-        Double amountY = -22.936826006961283 + stepY * this.stepNumber;
-        this.stepNumber = (this.stepNumber+1) % 10;
-
-        // we write the data to the json document
-        location.put("ID", this.mnID.toString());
-        location.put("messageCount", messageCounter);
-        location.put("longitude", amountX);
-        location.put("latitude", amountY);
-        location.put("date", new Date().toString());
-
-        try {
-            SwapData locationData = new SwapData();
-            locationData.setContext(location);
-            locationData.setDuration(60);			// tempo em segundos de vida da mensagem
-            return locationData;
-        } catch (Exception e) {
-            logger.error("Location Swap Data could not be created", e);
-            return null;
-        }
-    }
 }

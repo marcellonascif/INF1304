@@ -52,7 +52,7 @@ mvn exec:java -Dexec.mainClass="main.ProcessingNode"
 
 ```bash
 cd MobileNode
-mvn exec:java -Dexec.mainClass="main.MainCKMobileNode"
+mvn exec:java -Dexec.mainClass="main.MobileNode" -Dexec.args="pessoa Thomas -22.936826006961283 -43.18559736525978"
 ```
 
 ### Rodar o GroupDefiner
@@ -61,3 +61,4 @@ mvn exec:java -Dexec.mainClass="main.MainCKMobileNode"
 cd GroupDefiner
 mvn exec:java -Dexec.mainClass="main.MainGD"
 ``` 
+ 
