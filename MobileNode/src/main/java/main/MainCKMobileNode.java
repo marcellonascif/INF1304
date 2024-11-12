@@ -47,6 +47,7 @@ public class MainCKMobileNode extends CKMobileNode {
         SwapData locationData = newLocation(stepNumber);
 
         if (locationData != null) {
+            locationData.setTopic("AppModel");
             message.setContentObject(locationData);
             sendMessageToGateway(message);
             System.out.println("Localização enviada ao Processing Node.");
