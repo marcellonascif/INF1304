@@ -45,7 +45,7 @@
                 "nome": "Ipanema (General Osório)"
             },
             {
-                "grupo": 1002,
+                "grupo": 1014,
                 "nome": "Antero de Quental"
             }
         ]
@@ -71,15 +71,15 @@
         "linha": "202",
         "paradas": [
             {
-                "grupo": 1001,
+                "grupo": 1013,
                 "nome": "Jardim de Alah"
             },
             {
-                "grupo": 1002,
+                "grupo": 1014,
                 "nome": "Antero de Quental"
             },
             {
-                "grupo": 1003,
+                "grupo": 1015,
                 "nome": "Eurico Cruz"
             }
         ]

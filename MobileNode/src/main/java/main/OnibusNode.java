@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
+
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -13,13 +16,40 @@ import ckafka.data.SwapData;
 import lac.cnclib.sddl.message.ApplicationMessage;
 
 public class OnibusNode extends MobileNode {
-    private Set<PontoDeOnibus> pontos;
-    private Set<PontoDeOnibus> pontosDeOnibus;
+    private String id;
+    private String linha;
+    private List<PontoDeOnibus> proximosPontos;
     private int stepNumber = 0;
 
+
     public OnibusNode(String id, double latitude, double longitude){
-        super(id, latitude, longitude); 
+        super(id, latitude, longitude);
+
+        OnibusInfo info = new OnibusInfo();
+
         this.mnID = generateCustomUUID();
+        this.id = id;
+        this.linha = info.getLinha(id);
+        if (linha == null)
+            throw new IllegalArgumentException("Linha não encontrada para o ID: " + id);
+        this.proximosPontos = info.getPontosDeOnibus(id);
+
+        System.out.println(this.toString());
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Onibus %s da linha %s (mnID: %s)\n", id, linha, mnID.toString()));
+        sb.append("Próximos pontos:\n");
+
+        for (PontoDeOnibus ponto : proximosPontos) {
+            sb.append(String.format("  Grupo: %d, Nome: %s, Latitude: %.6f, Longitude: %.6f\n",
+                    ponto.getNumeroGrupo(), ponto.getNomePonto(), ponto.getLatitude(), ponto.getLongitude()));
+        }
+
+        return sb.toString();
     }
 
     private UUID generateCustomUUID() {
@@ -59,7 +89,7 @@ public class OnibusNode extends MobileNode {
             data.setMessage(locationJson.getBytes(StandardCharsets.UTF_8));
             data.setTopic("AppModel");
             message.setContentObject(data);
-            
+
             // sendMessageToGateway(message);
 
             return data;

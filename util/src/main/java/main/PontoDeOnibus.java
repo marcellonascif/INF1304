@@ -28,6 +28,14 @@ public class PontoDeOnibus {
         return coordenada;
     }
 
+    public double getLatitude() {
+        return coordenada.getLat();
+    }
+
+    public double getLongitude() {
+        return coordenada.getLon();
+    }
+
     @Override
     public String toString() {
         return "PontoDeOnibus{" +
