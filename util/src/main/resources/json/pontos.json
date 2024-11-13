@@ -1,0 +1,86 @@
+[
+    {
+        "grupo": 1001,
+        "nome": "Central do Brasil",
+        "latitude": -22.9035393,
+        "longitude": -43.1919497
+    },
+    {
+        "grupo": 1002,
+        "nome": "Candelária",
+        "latitude": -22.9027785,
+        "longitude": -43.1798449
+    },
+    {
+        "grupo": 1003,
+        "nome": "Carioca",
+        "latitude": -22.9060154,
+        "longitude": -43.1766842
+    },
+    {
+        "grupo": 1004,
+        "nome": "Largo do Machado",
+        "latitude": -22.9326671,
+        "longitude": -43.1778552
+    },
+    {
+        "grupo": 1005,
+        "nome": "Flamengo",
+        "latitude": -22.9311097,
+        "longitude": -43.1731826
+    },
+    {
+        "grupo": 1006,
+        "nome": "Botafogo",
+        "latitude": -22.9456781,
+        "longitude": -43.1859898
+    },
+    {
+        "grupo": 1007,
+        "nome": "Copacabana (Posto 6)",
+        "latitude": -22.9762304,
+        "longitude": -43.1903628
+    },
+    {
+        "grupo": 1008,
+        "nome": "Ipanema (General Osório)",
+        "latitude": -22.9837133,
+        "longitude": -43.1993063
+    },
+    {
+        "grupo": 1010,
+        "nome": "Jardim Botânico",
+        "latitude": -22.9671447,
+        "longitude": -43.2250494
+    },
+    {
+        "grupo": 1011,
+        "nome": "Gávea",
+        "latitude": -22.9796672,
+        "longitude": -43.2340116
+    },
+    {
+        "grupo": 1012,
+        "nome": "Lagoa",
+        "latitude": -22.9725652,
+        "longitude": -43.2148494
+    },
+    {
+        "grupo": 1001,
+        "nome": "Jardim de Alah",
+        "latitude": -22.979600001353386,
+        "longitude": -43.21824000015678
+    },
+    {
+        "grupo": 1002,
+        "nome": "Antero de Quental",
+        "latitude": -22.985489997004432,
+        "longitude": -43.22350000021057
+    },
+    {
+        "grupo": 1003,
+        "nome": "Eurico Cruz",
+        "latitude": -22.960475000471845,
+        "longitude": -43.20677600049465
+    }
+]

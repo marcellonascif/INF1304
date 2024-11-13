@@ -35,11 +35,16 @@ public class MobileNode extends CKMobileNode {
 
     public MobileNode(String nomeNode, double latitude, double longitude) {
 		super();
+        this.nomeNode = nomeNode;
 		this.latitude = latitude;
 		this.longitude = longitude;
 	}
 
-    public UUID getUuid() {
+    public String getNomeNode(){
+        return nomeNode;
+    }
+
+    public UUID getUUID() {
         return this.mnID;
     }
 

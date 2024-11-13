@@ -2,7 +2,9 @@ package main;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -11,12 +13,12 @@ import ckafka.data.SwapData;
 import lac.cnclib.sddl.message.ApplicationMessage;
 
 public class OnibusNode extends MobileNode {
-    private Map<String, double[]> pontosDeOnibus;
+    private Set<PontoDeOnibus> pontos;
+    private Set<PontoDeOnibus> pontosDeOnibus;
     private int stepNumber = 0;
 
-    public OnibusNode(String nome, double latitude, double longitude){
-        super(nome, latitude, longitude); 
-        this.pontosDeOnibus = pontosDeOnibus;
+    public OnibusNode(String id, double latitude, double longitude){
+        super(id, latitude, longitude); 
         this.mnID = generateCustomUUID();
     }
 
@@ -24,10 +26,6 @@ public class OnibusNode extends MobileNode {
         String uuid = UUID.randomUUID().toString().replace("-", "");
         uuid = "0" + uuid.substring(1);
         return UUID.fromString(uuid.substring(0, 8) + "-" + uuid.substring(8, 12) + "-" + uuid.substring(12, 16) + "-" + uuid.substring(16, 20) + "-" + uuid.substring(20));
-    }
-
-    public Map<String, double[]> getPontosDeOnibus(){
-        return pontosDeOnibus;
     }
 
     @Override
@@ -47,11 +45,10 @@ public class OnibusNode extends MobileNode {
         this.stepNumber = (this.stepNumber+1) % 10;
 
         // we write the data to the json document
-        location.put("ID", this.mnID.toString());
-        location.put("messageCount", messageCounter);
-        location.put("longitude", this.longitude);
+        location.put("ID", this.nomeNode);
+
         location.put("latitude", this.latitude);
-        location.put("date", new Date().toString());
+        location.put("longitude", this.longitude);
 
         try {
             // Converte o ObjectNode para uma string JSON

@@ -1,0 +1,87 @@
+[
+    {
+        "linha": "123",
+        "paradas": [
+            {
+                "grupo": 1001,
+                "nome": "Central do Brasil"
+            },
+            {
+                "grupo": 1002,
+                "nome": "Candelária"
+            },
+            {
+                "grupo": 1003,
+                "nome": "Carioca"
+            }
+        ]
+    },
+    {
+        "linha": "456",
+        "paradas": [
+            {
+                "grupo": 1004,
+                "nome": "Largo do Machado"
+            },
+            {
+                "grupo": 1005,
+                "nome": "Flamengo"
+            },
+            {
+                "grupo": 1006,
+                "nome": "Botafogo"
+            }
+        ]
+    },
+    {
+        "linha": "789",
+        "paradas": [
+            {
+                "grupo": 1007,
+                "nome": "Copacabana (Posto 6)"
+            },
+            {
+                "grupo": 1008,
+                "nome": "Ipanema (General Osório)"
+            },
+            {
+                "grupo": 1002,
+                "nome": "Antero de Quental"
+            }
+        ]
+    },
+    {
+        "linha": "101",
+        "paradas": [
+            {
+                "grupo": 1010,
+                "nome": "Jardim Botânico"
+            },
+            {
+                "grupo": 1011,
+                "nome": "Gávea"
+            },
+            {
+                "grupo": 1012,
+                "nome": "Lagoa"
+            }
+        ]
+    },
+    {
+        "linha": "202",
+        "paradas": [
+            {
+                "grupo": 1001,
+                "nome": "Jardim de Alah"
+            },
+            {
+                "grupo": 1002,
+                "nome": "Antero de Quental"
+            },
+            {
+                "grupo": 1003,
+                "nome": "Eurico Cruz"
+            }
+        ]
+    }
+]
