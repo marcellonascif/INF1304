@@ -8,10 +8,14 @@ import ckafka.data.SwapData;
 public class PessoaNode extends MobileNode {
     /** used to move this MN */
     private int stepNumber = 0;
+    private double latitude;
+    private double longitude;
 
     public PessoaNode(String nome, double latitude, double longitude){
-        super(nome, latitude, longitude);
+        super(nome);
         this.mnID = generateCustomUUID();
+        this.latitude = latitude;
+        this.longitude = longitude;
         System.out.println("UUID: " + this.mnID.toString());
     }
 
