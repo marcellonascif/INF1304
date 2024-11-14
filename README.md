@@ -31,9 +31,9 @@ sudo docker ps -a
 
 ### Para compilar os projetos maven, execute o script 'compile_all.sh'
 
-Conceder permissão de execução ao shell 
+Conceder permissão de execução ao shell
 ```bash
-chmod +x compile_all.sh 
+chmod +x compile_all.sh
 ```
 Rodar o script
 ```bash
@@ -53,8 +53,8 @@ mvn exec:java -Dexec.mainClass="main.ProcessingNode"
 ```bash
 cd MobileNode
 mvn exec:java -Dexec.mainClass="main.Main" -Dexec.args="pessoa Thomas -22.936826006961283 -43.18559736525978"
-ou 
-mvn exec:java -Dexec.mainClass="main.Main" -Dexec.args="onibus 539 -22.936826006961283 -43.18559736525978"
+ou
+mvn exec:java -Dexec.mainClass="main.Main" -Dexec.args="onibus 539"
 ```
 
 ### Rodar o GroupDefiner
@@ -62,5 +62,4 @@ mvn exec:java -Dexec.mainClass="main.Main" -Dexec.args="onibus 539 -22.936826006
 ```bash
 cd GroupDefiner
 mvn exec:java -Dexec.mainClass="main.MainGD"
-``` 
- 
+```
