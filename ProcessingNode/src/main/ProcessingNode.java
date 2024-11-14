@@ -120,15 +120,12 @@ public class ProcessingNode extends ModelApplication {
             ObjectNode rootNode = (ObjectNode) objectMapper.readTree(message);
 
             final String id = rootNode.get("id").asText();
-            System.out.println("ID do ônibus: " + id);
-            System.out.println("Velocidade do ônibus: " + rootNode.get("velocidade"));
             final double velocidadeOnibus = rootNode.get("velocidade").asDouble();
 
             final Coordinate coordOnibus = new Coordinate(
                 rootNode.get("latitude").asDouble(),
                 rootNode.get("longitude").asDouble()
             );
-            System.out.println("Coordenadas do ônibus: " + coordOnibus);
 
             final ArrayNode proximosPontosAN = (ArrayNode) rootNode.get("proximosPontos");
 
@@ -141,6 +138,9 @@ public class ProcessingNode extends ModelApplication {
                     pontoNode.get("longitude").asDouble()
                 ));
             }
+
+            System.out.println("ID: " + id);
+            System.out.println("Coordenadas do ônibus: " + coordOnibus);
 
             this.sendToGroups(coordOnibus, velocidadeOnibus, proximosPontos);
 
@@ -158,10 +158,10 @@ public class ProcessingNode extends ModelApplication {
 
             int group = ponto.getNumeroGrupo();
 
-            String messageText = "Tempo para chegar ao ponto de ônibus: " + tempo + " minuto(s)";
-            System.out.println("Mensagem enviada para grupo" + group + ": " + messageText);
+            String message = "Tempo para chegar ao ponto de ônibus: " + tempo + " minuto(s)";
+            System.out.println("Mensagem enviada para grupo" + group + ": " + message);
 
-            this.sendGroupcastMessage(messageText, String.valueOf(group));
+            this.sendGroupcastMessage(message, String.valueOf(group));
         }
     }
 
