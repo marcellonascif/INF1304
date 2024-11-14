@@ -80,7 +80,7 @@ public class MobileNode extends CKMobileNode {
         Scanner keyboard = new Scanner(System.in);
         boolean fim = false;
         while(!fim) {
-            System.out.print("Mensagem para (P)rocessing Node (Z para terminar)? ");
+            System.out.print("Digite Z para terminar ");
             String linha = keyboard.nextLine();
             linha = linha.toUpperCase();
 

@@ -33,7 +33,7 @@ public class MainGD implements GroupSelection{
         new GroupDefiner(this, swap);
         System.out.println("GroupDefiner iniciado.");
 
-        // Carrega os pontos de ônibus do arquivo CSV
+        // Carrega os pontos de ônibus do arquivo JSON
         pontosDeOnibus = onibusInfo.carregarPontosDeOnibus();
 
         System.out.println("Pontos de ônibus carregados:");

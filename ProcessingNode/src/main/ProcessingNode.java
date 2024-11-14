@@ -4,20 +4,24 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import ckafka.data.Swap;
 import ckafka.data.SwapData;
 import main.java.application.ModelApplication;
 
-
-// import br.com.meslin.auxiliar.StaticLibrary;
-
+/**
+ * Processing Node
+ */
 public class ProcessingNode extends ModelApplication {
     private ObjectMapper objectMapper;
     private Swap swap;
@@ -69,29 +73,27 @@ public class ProcessingNode extends ModelApplication {
     /**
      *
      */
-//     public void runPN(Scanner keyboard) {
-//         Map<String, Consumer<Scanner>> optionsMap = new HashMap<>();
+    // public void runPN(Scanner keyboard) {
+    //     Map<String, Consumer<Scanner>> optionsMap = new HashMap<>();
 
-//         // Mapeia as opções para as funções correspondentes
-//         optionsMap.put(OPTION_GROUPCAST, this::sendGroupcastMessage);
-//         optionsMap.put(OPTION_UNICAST, this::sendUnicastMessage);
-// //        optionsMap.put(OPTION_PN, this::sendMessageToPN);
-//         optionsMap.put(OPTION_EXIT, scanner -> fim = true);
+    //     // Mapeia as opções para as funções correspondentes
+    //     optionsMap.put(OPTION_EXIT, scanner -> fim = true);
 
-//         while(!fim) {
-//             System.out.print("Mensagem para (G)rupo ou (I)ndivíduo (P)rocessing Node (Z para terminar)? \n\n");
-//             String linha = keyboard.nextLine().trim().toUpperCase();
-//             System.out.printf("Sua opção foi %s.\n", linha);
-//             if(optionsMap.containsKey(linha)) optionsMap.get(linha).accept(keyboard);
-//             else System.out.printf("Opção %s inválida.\n", linha);
-//         }
-//         keyboard.close();
-//         System.out.println("FIM!");
-//         System.exit(0);
-//     }
+    //     while(!fim) {
+    //         System.out.print("Mensagem para (G)rupo ou (I)ndivíduo (P)rocessing Node (Z para terminar)? \n\n");
+    //         String linha = keyboard.nextLine().trim().toUpperCase();
+    //         System.out.printf("Sua opção foi %s.\n", linha);
+    //         if(optionsMap.containsKey(linha)) optionsMap.get(linha).accept(keyboard);
+    //         else System.out.printf("Opção %s inválida.\n", linha);
+    //     }
+    //     keyboard.close();
+    //     System.out.println("FIM!");
+    //     System.exit(0);
+    // }
 
     /**
-     *
+     * Activated when a record is received
+     * @param record
      */
     @Override
     public void recordReceived(ConsumerRecord record) {
@@ -100,10 +102,10 @@ public class ProcessingNode extends ModelApplication {
         try {
             SwapData data = swap.SwapDataDeserialization((byte[]) record.value());
             // System.out.println(data.getClass());
-            String text = new String(data.getMessage(), StandardCharsets.UTF_8);
-            System.out.println("Mensagem recebida = " + text);
+            String message = new String(data.getMessage(), StandardCharsets.UTF_8);
+            System.out.println("Mensagem recebida = " + message);
 
-            sendGroupcastMessage(text);
+            processMessage(message);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,40 +113,71 @@ public class ProcessingNode extends ModelApplication {
     }
 
     /**
-     * Send groupcast message
+     * Process message
      * @param message
      */
-    private void sendGroupcastMessage(String message) {
+    private void processMessage(String message) {
 
-        String group = extractGroup(message);
-        Coordinate coordBus = extractCoordinate(message);
-        Coordinate coordStop = new Coordinate(10, 10);
+        try{
+            ObjectNode rootNode = (ObjectNode) objectMapper.readTree(message);
 
-        double distance = StaticLibrary.calcularDistancia(coordBus, coordStop);
+            final String id = rootNode.get("id").asText();
+            System.out.println("ID do ônibus: " + id);
+            System.out.println("Velocidade do ônibus: " + rootNode.get("velocidade"));
+            final double velocidadeOnibus = rootNode.get("velocidade").asDouble();
 
-        double speedBus = 50;
-        double tempo = StaticLibrary.calcularTempo(distance, speedBus);
+            final Coordinate coordOnibus = new Coordinate(
+                rootNode.get("latitude").asDouble(),
+                rootNode.get("longitude").asDouble()
+            );
+            System.out.println("Coordenadas do ônibus: " + coordOnibus);
 
-        String messageText = "Tempo para chegar ao ponto de ônibus: " + tempo + " minuto(s)";
-        System.out.println("Mensagem enviada para grupo" + group + ": " + messageText);
+            final ArrayNode proximosPontosAN = (ArrayNode) rootNode.get("proximosPontos");
 
+            List<PontoDeOnibus> proximosPontos = new ArrayList<>();
+            for (JsonNode pontoNode : proximosPontosAN) {
+                proximosPontos.add(new PontoDeOnibus(
+                    pontoNode.get("numeroGrupo").asInt(),
+                    id,
+                    pontoNode.get("latitude").asDouble(),
+                    pontoNode.get("longitude").asDouble()
+                ));
+            }
+
+            this.sendToGroups(coordOnibus, velocidadeOnibus, proximosPontos);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("Error reading JSON in processMessage", e);
+        }
+    }
+
+    private void sendToGroups(Coordinate coordOnibus, double velocidadeOnibus, List<PontoDeOnibus> proximosPontos) {
+        for (PontoDeOnibus ponto : proximosPontos) {
+            Coordinate coordPonto = ponto.getCoordenada();
+            double distancia = StaticLibrary.calcularDistancia(coordOnibus, coordPonto);
+            double tempo = StaticLibrary.calcularTempo(distancia, velocidadeOnibus);
+
+            int group = ponto.getNumeroGrupo();
+
+            String messageText = "Tempo para chegar ao ponto de ônibus: " + tempo + " minuto(s)";
+            System.out.println("Mensagem enviada para grupo" + group + ": " + messageText);
+
+            this.sendGroupcastMessage(messageText, String.valueOf(group));
+        }
+    }
+
+    /**
+     * Send groupcast message
+     * @param message
+     * @param group
+     */
+    private void sendGroupcastMessage(String message, String group) {
         try {
-            sendRecord(createRecord("GroupMessageTopic", group, swap.SwapDataSerialization(createSwapData(messageText))));
+            sendRecord(createRecord("GroupMessageTopic", group, swap.SwapDataSerialization(createSwapData(message))));
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("Error SendGroupCastMessage", e);
         }
-    }
-
-    public String extractGroup (String text){
-        String[] parts = text.split(",");
-        return parts[0];
-    }
-
-    public Coordinate extractCoordinate (String text){
-        String[] parts = text.split(",");
-        double latitude = Double.parseDouble(parts[1]);
-        double longitude = Double.parseDouble(parts[2]);
-        return new Coordinate(latitude, longitude);
     }
 }

@@ -7,7 +7,6 @@ import ckafka.data.SwapData;
 
 public class PessoaNode extends MobileNode {
     /** used to move this MN */
-    private int stepNumber = 0;
     private double latitude;
     private double longitude;
 
@@ -39,15 +38,6 @@ public class PessoaNode extends MobileNode {
 
         // creates an empty json {}
         ObjectNode location = objectMapper.createObjectNode();
-
-        // 3 parameters that composes
-        // Origem: -43.18559736525978 -22.936826006961283
-        // Destino -43.23232376069340 -22.978883470478085
-        double stepX = (-43.23232376069340 - (this.longitude)) / 10;
-        double stepY = (-22.978883470478085 - (this.latitude)) / 10;
-        this.latitude += stepY;
-        this.longitude += stepX;
-        this.stepNumber = (this.stepNumber+1) % 10;
 
         // we write the data to the json document
         location.put("ID", this.mnID.toString());
