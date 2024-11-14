@@ -25,7 +25,7 @@ public class MobileNode extends CKMobileNode {
     protected String nomeNode;
     protected double latitude;
 	protected double longitude;
-    
+
     /**
      * Constructor
      */
@@ -33,11 +33,9 @@ public class MobileNode extends CKMobileNode {
     public MobileNode(){
     }
 
-    public MobileNode(String nomeNode, double latitude, double longitude) {
+    public MobileNode(String nomeNode) {
 		super();
         this.nomeNode = nomeNode;
-		this.latitude = latitude;
-		this.longitude = longitude;
 	}
 
     public String getNomeNode(){
