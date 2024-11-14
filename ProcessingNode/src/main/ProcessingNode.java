@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 
@@ -27,9 +28,8 @@ public class ProcessingNode extends ModelApplication {
     private Swap swap;
 
     // Opções válidas de entrada do usuário
-    private static final String OPTION_GROUPCAST = "G";
-    private static final String OPTION_PN = "P";
     private static final String OPTION_EXIT = "Z";
+    private boolean fim = false;
 
     /**
      * Constructor
@@ -65,31 +65,29 @@ public class ProcessingNode extends ModelApplication {
        }
         Scanner keyboard = new Scanner(System.in);
         ProcessingNode pn = new ProcessingNode();
-        // pn.runPN(keyboard);
-
-        keyboard.close();
+        pn.runPN(keyboard);
     }
 
-    /**
-     *
-     */
-    // public void runPN(Scanner keyboard) {
-    //     Map<String, Consumer<Scanner>> optionsMap = new HashMap<>();
 
-    //     // Mapeia as opções para as funções correspondentes
-    //     optionsMap.put(OPTION_EXIT, scanner -> fim = true);
+    public void runPN(Scanner keyboard) {
+        Map<String, Consumer<Scanner>> optionsMap = new HashMap<>();
 
-    //     while(!fim) {
-    //         System.out.print("Mensagem para (G)rupo ou (I)ndivíduo (P)rocessing Node (Z para terminar)? \n\n");
-    //         String linha = keyboard.nextLine().trim().toUpperCase();
-    //         System.out.printf("Sua opção foi %s.\n", linha);
-    //         if(optionsMap.containsKey(linha)) optionsMap.get(linha).accept(keyboard);
-    //         else System.out.printf("Opção %s inválida.\n", linha);
-    //     }
-    //     keyboard.close();
-    //     System.out.println("FIM!");
-    //     System.exit(0);
-    // }
+        // Mapeia as opções para as funções correspondentes
+        optionsMap.put(OPTION_EXIT, scanner -> fim = true);
+
+        while(!fim) {
+            System.out.print("(Z para terminar)? \n\n");
+            String linha = keyboard.nextLine().trim().toUpperCase();
+
+            System.out.printf("Sua opção foi %s.\n", linha);
+            if(optionsMap.containsKey(linha)) optionsMap.get(linha).accept(keyboard);
+            else System.out.printf("Opção %s inválida.\n", linha);
+        }
+
+        keyboard.close();
+        System.out.println("FIM!");
+        System.exit(0);
+    }
 
     /**
      * Activated when a record is received
