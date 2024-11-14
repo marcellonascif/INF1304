@@ -1,14 +1,10 @@
 package main;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.UUID;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ckafka.data.SwapData;
 import lac.cnclib.net.NodeConnection;
@@ -108,50 +104,6 @@ public class MobileNode extends CKMobileNode {
         System.exit(0);
     }
 
-    /**
-     * Sends a unicast message
-     * @param keyboard
-     */
-    private void sendUnicastMessage(Scanner keyboard) {
-        System.out.println("Mensagem unicast. Entre com o UUID do indivíduo:\n"
-                + "HHHHHHHH-HHHH-HHHH-HHHH-HHHHHHHHHHHH");
-        String uuid = keyboard.nextLine();
-        System.out.print("Entre com a mensagem: ");
-        String messageText = keyboard.nextLine();
-        System.out.println(String.format("Enviando mensagem |%s| para o indivíduo %s.", messageText, uuid));
-
-        // Create and send the message
-        SwapData privateData = new SwapData();
-        privateData.setMessage(messageText.getBytes(StandardCharsets.UTF_8));
-        privateData.setTopic("PrivateMessageTopic");
-        privateData.setRecipient(uuid);
-        ApplicationMessage message = createDefaultApplicationMessage();
-        message.setContentObject(privateData);
-        sendMessageToGateway(message);
-    }
-
-    /**
-     * sendGroupcastMessage<br>
-     * Sends a groupcast message<br>
-     * @param keyboard
-     */
-    private void sendGroupcastMessage(Scanner keyboard) {
-        // get message content
-        String group;
-        System.out.print("Mensagem groupcast. Entre com o número do grupo: ");
-        group = keyboard.nextLine();
-        System.out.print("Entre com a mensagem: ");
-        String messageText = keyboard.nextLine();
-        System.out.println(String.format("Enviando mensagem |%s| para o grupo %s.", messageText, group));
-        // create and send the message
-        SwapData groupData = new SwapData();
-        groupData.setMessage(messageText.getBytes(StandardCharsets.UTF_8));
-        groupData.setTopic("GroupMessageTopic");
-        groupData.setRecipient(group);
-        ApplicationMessage message = createDefaultApplicationMessage();
-        message.setContentObject(groupData);
-        sendMessageToGateway(message);
-    }
 
     /**
      * Method called when the mobile node connects with the Gateway
@@ -182,7 +134,7 @@ public class MobileNode extends CKMobileNode {
                 sendMessageToGateway(message);
             } else {
                 String str = new String(swp.getMessage(), StandardCharsets.UTF_8);
-                logger.info(String.format("Message received from %s: %s", message.getRecipientID(), str));
+                logger.info(String.format("Mensagem recebida do PN: %s", str));
             }
         } catch (Exception e) {
             logger.error("Error reading new message received");

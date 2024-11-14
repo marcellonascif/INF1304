@@ -1,86 +1,133 @@
 [
     {
-        "linha": "123",
+        "linha": "2001",
+        "filme": "2001: Uma Odisseia no Espaço",
         "paradas": [
             {
                 "grupo": 1001,
-                "nome": "Central do Brasil"
+                "nome": "Terra"
             },
             {
                 "grupo": 1002,
-                "nome": "Candelária"
+                "nome": "Estação Espacial 5"
             },
             {
                 "grupo": 1003,
-                "nome": "Carioca"
+                "nome": "Júpiter"
+            },
+            {
+                "grupo": 1004,
+                "nome": "Portão Estelar"
             }
         ]
     },
     {
-        "linha": "456",
+        "linha": "426",
+        "filme": "Alien",
         "paradas": [
             {
-                "grupo": 1004,
-                "nome": "Largo do Machado"
-            },
-            {
                 "grupo": 1005,
-                "nome": "Flamengo"
+                "nome": "Nostromo"
             },
             {
                 "grupo": 1006,
-                "nome": "Botafogo"
-            }
-        ]
-    },
-    {
-        "linha": "789",
-        "paradas": [
+                "nome": "LV-426"
+            },
             {
                 "grupo": 1007,
-                "nome": "Copacabana (Posto 6)"
-            },
-            {
-                "grupo": 1008,
-                "nome": "Ipanema (General Osório)"
-            },
-            {
-                "grupo": 1014,
-                "nome": "Antero de Quental"
+                "nome": "Base da Companhia"
             }
         ]
     },
     {
-        "linha": "101",
+        "linha": "2187",
+        "filme": "Star Wars: Episódio IV - Uma Nova Esperança",
         "paradas": [
             {
+                "grupo": 1008,
+                "nome": "Tatooine"
+            },
+            {
+                "grupo": 1009,
+                "nome": "Estrela da Morte"
+            },
+            {
                 "grupo": 1010,
-                "nome": "Jardim Botânico"
+                "nome": "Yavin IV"
+            }
+        ]
+    },
+    {
+        "linha": "1701",
+        "filme": "Star Trek",
+        "paradas": [
+            {
+                "grupo": 1001,
+                "nome": "Terra"
             },
             {
                 "grupo": 1011,
-                "nome": "Gávea"
+                "nome": "Sistema Klingon"
             },
             {
                 "grupo": 1012,
-                "nome": "Lagoa"
+                "nome": "Vulcano"
+            },
+            {
+                "grupo": 1013,
+                "nome": "Romulus"
             }
         ]
     },
     {
-        "linha": "202",
+        "linha": "1021",
+        "filme": "Interestelar",
         "paradas": [
             {
-                "grupo": 1013,
-                "nome": "Jardim de Alah"
+                "grupo": 1001,
+                "nome": "Terra"
             },
             {
                 "grupo": 1014,
-                "nome": "Antero de Quental"
+                "nome": "Planeta Miller"
             },
             {
                 "grupo": 1015,
-                "nome": "Eurico Cruz"
+                "nome": "Planeta Mann"
+            },
+            {
+                "grupo": 1016,
+                "nome": "Gargantua"
+            },
+            {
+                "grupo": 1017,
+                "nome": "Estação Cooper"
+            }
+        ]
+    },
+    {
+        "linha": "137",
+        "filme": "Rick and Morty",
+        "paradas": [
+            {
+                "grupo": 1018,
+                "nome": "Terra C-137"
+            },
+            {
+                "grupo": 1019,
+                "nome": "Citadela dos Ricks"
+            },
+            {
+                "grupo": 1020,
+                "nome": "Gazorpazorp"
+            },
+            {
+                "grupo": 1021,
+                "nome": "Planeta Squanch"
+            },
+            {
+                "grupo": 1022,
+                "nome": "Anatomy Park"
             }
         ]
     }

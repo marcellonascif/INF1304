@@ -1,86 +1,134 @@
 [
     {
         "grupo": 1001,
-        "nome": "Central do Brasil",
-        "latitude": -22.9035393,
-        "longitude": -43.1919497
+        "nome": "Terra",
+        "latitude": 0.0000,
+        "longitude": 0.0000
     },
     {
         "grupo": 1002,
-        "nome": "Candelária",
-        "latitude": -22.9027785,
-        "longitude": -43.1798449
+        "nome": "Estação Espacial 5",
+        "latitude": 5.0000,
+        "longitude": 45.0000
     },
     {
         "grupo": 1003,
-        "nome": "Carioca",
-        "latitude": -22.9060154,
-        "longitude": -43.1766842
+        "nome": "Júpiter",
+        "latitude": 10.0000,
+        "longitude": 90.0000
     },
     {
         "grupo": 1004,
-        "nome": "Largo do Machado",
-        "latitude": -22.9326671,
-        "longitude": -43.1778552
+        "nome": "Portão Estelar",
+        "latitude": 15.0000,
+        "longitude": 135.0000
     },
     {
         "grupo": 1005,
-        "nome": "Flamengo",
-        "latitude": -22.9311097,
-        "longitude": -43.1731826
+        "nome": "Nostromo",
+        "latitude": 20.0000,
+        "longitude": 180.0000
     },
     {
         "grupo": 1006,
-        "nome": "Botafogo",
-        "latitude": -22.9456781,
-        "longitude": -43.1859898
+        "nome": "LV-426",
+        "latitude": 25.0000,
+        "longitude": -135.0000
     },
     {
         "grupo": 1007,
-        "nome": "Copacabana (Posto 6)",
-        "latitude": -22.9762304,
-        "longitude": -43.1903628
+        "nome": "Base da Companhia",
+        "latitude": 30.0000,
+        "longitude": -90.0000
     },
     {
         "grupo": 1008,
-        "nome": "Ipanema (General Osório)",
-        "latitude": -22.9837133,
-        "longitude": -43.1993063
+        "nome": "Tatooine",
+        "latitude": 35.0000,
+        "longitude": -45.0000
+    },
+    {
+        "grupo": 1009,
+        "nome": "Estrela da Morte",
+        "latitude": 40.0000,
+        "longitude": 0.0000
     },
     {
         "grupo": 1010,
-        "nome": "Jardim Botânico",
-        "latitude": -22.9671447,
-        "longitude": -43.2250494
-    },
-    {
-        "grupo": 1011,
-        "nome": "Gávea",
-        "latitude": -22.9796672,
-        "longitude": -43.2340116
+        "nome": "Yavin IV",
+        "latitude": 45.0000,
+        "longitude": 45.0000
     },
     {
         "grupo": 1012,
-        "nome": "Lagoa",
-        "latitude": -22.9725652,
-        "longitude": -43.2148494
+        "nome": "Sistema Klingon",
+        "latitude": 55.0000,
+        "longitude": 135.0000
     },
     {
         "grupo": 1013,
-        "nome": "Jardim de Alah",
-        "latitude": -22.979600001353386,
-        "longitude": -43.21824000015678
+        "nome": "Vulcano",
+        "latitude": 60.0000,
+        "longitude": 180.0000
     },
     {
         "grupo": 1014,
-        "nome": "Antero de Quental",
-        "latitude": -22.985489997004432,
-        "longitude": -43.22350000021057
+        "nome": "Romulus",
+        "latitude": 65.0000,
+        "longitude": -135.0000
     },
     {
-        "grupo": 1015,
-        "nome": "Eurico Cruz",
-        "latitude": -22.960475000471845,
-        "longitude": -43.20677600049465
+        "grupo": 1016,
+        "nome": "Planeta Miller",
+        "latitude": 75.0000,
+        "longitude": -45.0000
+    },
+    {
+        "grupo": 1017,
+        "nome": "Planeta Mann",
+        "latitude": 80.0000,
+        "longitude": 0.0000
+    },
+    {
+        "grupo": 1018,
+        "nome": "Gargantua",
+        "latitude": 85.0000,
+        "longitude": 45.0000
+    },
+    {
+        "grupo": 1019,
+        "nome": "Estação Cooper",
+        "latitude": 89.0000,
+        "longitude": 90.0000
+    },
+    {
+        "grupo": 1020,
+        "nome": "Terra C-137",
+        "latitude": -5.0000,
+        "longitude": -45.0000
+    },
+    {
+        "grupo": 1021,
+        "nome": "Citadela dos Ricks",
+        "latitude": -10.0000,
+        "longitude": -90.0000
+    },
+    {
+        "grupo": 1022,
+        "nome": "Gazorpazorp",
+        "latitude": -15.0000,
+        "longitude": -135.0000
+    },
+    {
+        "grupo": 1023,
+        "nome": "Planeta Squanch",
+        "latitude": -20.0000,
+        "longitude": -180.0000
+    },
+    {
+        "grupo": 1024,
+        "nome": "Anatomy Park",
+        "latitude": -25.0000,
+        "longitude": 135.0000
     }
 ]

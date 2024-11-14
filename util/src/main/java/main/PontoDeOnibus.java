@@ -1,9 +1,6 @@
 package main;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
-import java.util.HashSet;
-import java.util.Set;
-import main.StaticLibrary;
 
 public class PontoDeOnibus {
     private int numeroGrupo;

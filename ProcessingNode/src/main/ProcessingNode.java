@@ -159,7 +159,7 @@ public class ProcessingNode extends ModelApplication {
             int group = ponto.getNumeroGrupo();
 
             String message = "Tempo para chegar ao ponto de ônibus: " + tempo + " minuto(s)";
-            System.out.println("Mensagem enviada para grupo" + group + ": " + message);
+            System.out.println("Mensagem enviada para grupo " + group + ": " + message);
 
             this.sendGroupcastMessage(message, String.valueOf(group));
         }

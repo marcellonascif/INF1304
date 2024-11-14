@@ -50,11 +50,23 @@ mvn exec:java -Dexec.mainClass="main.ProcessingNode"
 
 ### Rodar o MobileNode
 
+O MobileNode pode ser instanciado para duas classes, PessoaNode ou OnibusNode.
+
+A classe `PessoaNode` representa um nó de localização para pessoas e é instanciada com os seguintes parâmetros:
+
+- **`tipoNode`**: Define o tipo de nó, especificando que se trata de uma pessoa.
+- **`nomeNode`**: O nome associado ao nó da pessoa, utilizado para identificação.
+- **`latitude`**: A latitude inicial da pessoa, em coordenadas geográficas.
+- **`longitude`**: A longitude inicial da pessoa, em coordenadas geográficas.
 ```bash
 cd MobileNode
-mvn exec:java -Dexec.mainClass="main.Main" -Dexec.args="pessoa Thomas -22.936826006961283 -43.18559736525978"
-ou
-mvn exec:java -Dexec.mainClass="main.Main" -Dexec.args="onibus 539"
+mvn exec:java -Dexec.mainClass="main.Main" -Dexec.args="pessoa Thomas 40.0 0.0"
+```
+
+A classe `OnibusNode` representa um nó de localização para ônibus:
+```bash
+cd MobileNode
+mvn exec:java -Dexec.mainClass="main.Main" -Dexec.args="onibus Millennium-Falcon"
 ```
 
 ### Rodar o GroupDefiner
